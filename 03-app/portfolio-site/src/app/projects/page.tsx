@@ -1,5 +1,5 @@
 import { Badge, PageShell, ProjectCard, SectionHeading } from "@/components/site";
-import { getProjectCategories, projects } from "@/lib/site-data";
+import { getProjectListContent } from "@/lib/project-list-shell";
 
 export const metadata = {
   title: "Projects",
@@ -7,8 +7,8 @@ export const metadata = {
     "Browse a structured library of AI, automation, data, analytics, and deployment projects.",
 };
 
-export default function ProjectsPage() {
-  const categories = getProjectCategories();
+export default async function ProjectsPage() {
+  const { categories, projects } = await getProjectListContent();
 
   return (
     <PageShell className="space-y-12 py-10 sm:py-14 lg:py-16">

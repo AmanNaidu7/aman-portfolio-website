@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   Badge,
@@ -8,7 +8,10 @@ import {
   TextLink,
   VisualFrame,
 } from "@/components/site";
-import { getProjectBySlug, projects } from "@/lib/site-data";
+import {
+  getProjectDetailContentBySlug,
+  getProjectRouteParams,
+} from "@/lib/project-shell";
 
 type ProjectPageProps = {
   params: Promise<{
@@ -16,17 +19,15 @@ type ProjectPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
+export async function generateStaticParams() {
+  return getProjectRouteParams();
 }
 
 export async function generateMetadata({
   params,
 }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectDetailContentBySlug(slug);
 
   if (!project) {
     return {
@@ -42,7 +43,7 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+  const project = await getProjectDetailContentBySlug(slug);
 
   if (!project) {
     notFound();

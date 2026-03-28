@@ -1,4 +1,4 @@
-import {
+﻿import {
   Badge,
   ButtonLink,
   CapabilityCard,
@@ -11,47 +11,52 @@ import {
   VisualFrame,
 } from "@/components/site";
 import {
-  capabilities,
-  credibilityPoints,
-  homeStats,
-  processSteps,
-  projects,
-  site,
-} from "@/lib/site-data";
+  getFeaturedProjects,
+  getHomeShellContent,
+  getHomeStats,
+} from "@/lib/home-shell";
+import { getSiteShellContent } from "@/lib/site-shell";
 
-export const metadata = {
-  title: "Aman Naidu | Portfolio",
-  description:
-    "Senior AI, data, automation, and analytics portfolio with projects, background, and contact details.",
-};
+export async function generateMetadata() {
+  const [shell, content] = await Promise.all([
+    getSiteShellContent(),
+    getHomeShellContent(),
+  ]);
 
-export default function Home() {
-  const featuredProjects = projects.filter((project) => project.featured);
+  return {
+    title: `${shell.site.name} | Portfolio`,
+    description: content.heroSummary,
+  };
+}
+
+export default async function Home() {
+  const content = await getHomeShellContent();
+  const featuredProjects = getFeaturedProjects();
+  const homeStats = getHomeStats();
 
   return (
     <PageShell className="space-y-20 py-10 sm:py-14 lg:py-16">
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-8">
-          <Badge>Senior portfolio for AI, data, and automation work</Badge>
+          <Badge>{content.eyebrow}</Badge>
           <div className="space-y-5">
             <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-balance text-white sm:text-5xl lg:text-7xl">
-              I build practical systems that turn complex data and AI into
-              reliable business tools.
+              {content.heroTitle}
             </h1>
             <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-              {site.name} is a senior AI, data, automation, and analytics
-              professional focused on clear architecture, production-minded
-              delivery, and credible outcomes for business teams.
+              {content.heroSummary}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/projects">View Projects</ButtonLink>
-            <ButtonLink href="/contact" variant="secondary">
-              Contact Me
+            <ButtonLink href={content.heroPrimaryCTA.href}>
+              {content.heroPrimaryCTA.label}
             </ButtonLink>
-            <ButtonLink href="/about" variant="ghost">
-              About
+            <ButtonLink href={content.heroSecondaryCTA.href} variant="secondary">
+              {content.heroSecondaryCTA.label}
+            </ButtonLink>
+            <ButtonLink href={content.heroTertiaryCTA.href} variant="ghost">
+              {content.heroTertiaryCTA.label}
             </ButtonLink>
           </div>
 
@@ -75,7 +80,7 @@ export default function Home() {
                   Operating style
                 </p>
                 <p className="mt-2 text-lg font-medium text-white">
-                  Structured, calm, and commercially useful
+                  {content.operatingStyle}
                 </p>
               </div>
               <div className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
@@ -84,14 +89,20 @@ export default function Home() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              {credibilityPoints.map((point) => (
+              {content.credibilityStrip.map((point, index) => (
                 <div
-                  key={point.label}
+                  key={point}
                   className="rounded-2xl border border-white/10 bg-white/5 p-4"
                 >
-                  <p className="text-sm font-medium text-white">{point.label}</p>
+                  <p className="text-sm font-medium text-white">{point}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-300">
-                    {point.description}
+                    {index === 0
+                      ? "Established credibility and experience for senior audiences."
+                      : index === 1
+                        ? "Built to communicate systems that solve real business problems."
+                        : index === 2
+                          ? "Shows implementation depth and production-minded thinking."
+                          : "Relevant for consulting, delivery, and technical leadership."}
                   </p>
                 </div>
               ))}
@@ -102,18 +113,21 @@ export default function Home() {
                 <div>
                   <p className="text-sm text-slate-400">Focus areas</p>
                   <p className="mt-1 text-lg font-medium text-white">
-                    AI Systems, Automation, Data, Analytics
+                    {content.capabilities
+                      .slice(0, 4)
+                      .map((capability) => capability.title)
+                      .join(", ")}
                   </p>
                 </div>
                 <div className="h-12 w-12 rounded-2xl bg-[linear-gradient(135deg,rgba(45,212,191,0.35),rgba(59,130,246,0.15))]" />
               </div>
               <div className="mt-5 grid grid-cols-3 gap-3">
-                {["Discover", "Design", "Build"].map((item) => (
+                {content.workingStyleSteps.slice(0, 3).map((step) => (
                   <div
-                    key={item}
+                    key={step.title}
                     className="rounded-xl border border-white/10 bg-white/5 px-3 py-4 text-center text-sm text-slate-200"
                   >
-                    {item}
+                    {step.title}
                   </div>
                 ))}
               </div>
@@ -143,7 +157,7 @@ export default function Home() {
           description="These are the kinds of systems this portfolio is meant to communicate clearly."
         />
         <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-5">
-          {capabilities.map((capability) => (
+          {content.capabilities.map((capability) => (
             <CapabilityCard key={capability.title} capability={capability} />
           ))}
         </div>
@@ -158,9 +172,7 @@ export default function Home() {
             Senior enough to think in systems. Practical enough to ship.
           </h2>
           <p className="max-w-prose text-sm leading-7 text-slate-300 sm:text-base">
-            The site is designed to communicate {site.name} as someone who can
-            bridge business requirements and technical delivery, then execute on
-            that bridge without losing clarity, quality, or trust.
+            {content.professionalSummary}
           </p>
           <ButtonLink href="/about" variant="secondary">
             Read About
@@ -174,7 +186,7 @@ export default function Home() {
                 Working style
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-white">
-                How I approach projects
+                {content.workingStyleTitle}
               </h2>
             </div>
             <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
@@ -182,7 +194,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {processSteps.map((step, index) => (
+            {content.workingStyleSteps.map((step, index) => (
               <ProcessCard key={step.title} step={step} index={index + 1} />
             ))}
           </div>

@@ -1,21 +1,27 @@
 ﻿import type { Metadata } from "next";
 import { SiteFooter, SiteHeader } from "@/components/site";
-import { site } from "@/lib/site-data";
+import { getSiteShellContent } from "@/lib/site-shell";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: {
-    default: site.name,
-    template: `%s | ${site.name}`,
-  },
-  description: site.description,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const shell = await getSiteShellContent();
 
-export default function RootLayout({
+  return {
+    title: {
+      default: shell.site.name,
+      template: `%s | ${shell.site.name}`,
+    },
+    description: shell.site.description,
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const shell = await getSiteShellContent();
+
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full text-slate-100">
@@ -29,9 +35,9 @@ export default function RootLayout({
             <div className="absolute bottom-[-8rem] left-[-8rem] h-[20rem] w-[20rem] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.12),rgba(15,23,42,0))] blur-3xl" />
           </div>
           <div className="relative z-10 flex min-h-screen flex-col">
-            <SiteHeader />
+            <SiteHeader content={shell} />
             <main className="flex-1">{children}</main>
-            <SiteFooter />
+            <SiteFooter content={shell} />
           </div>
         </div>
       </body>

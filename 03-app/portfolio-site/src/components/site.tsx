@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { navigation, projects, socialLinks, site } from "@/lib/site-data";
+import { projects } from "@/lib/site-data";
+import type { SiteShellContent } from "@/lib/site-shell";
+import { getSiteShellContent } from "@/lib/site-shell";
 
 type TextLinkProps = {
   href: string;
@@ -279,7 +281,13 @@ export function ProcessCard({ step, index }: ProcessCardProps) {
   );
 }
 
-export function SiteHeader() {
+export async function SiteHeader({
+  content,
+}: {
+  content?: SiteShellContent;
+}) {
+  const shell = content ?? (await getSiteShellContent());
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/75 backdrop-blur-xl">
       <PageShell className="flex items-center justify-between gap-6 py-4">
@@ -289,14 +297,14 @@ export function SiteHeader() {
           </div>
           <div>
             <p className="text-sm font-medium text-white transition group-hover:text-emerald-200">
-              {site.name}
+              {shell.site.name}
             </p>
-            <p className="text-xs text-slate-400">{site.title}</p>
+            <p className="text-xs text-slate-400">{shell.site.title}</p>
           </div>
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
-          {navigation.map((item) => (
+          {shell.navigation.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -309,27 +317,35 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <Link
-            href="/projects"
+            href={shell.secondaryCTA.href}
             className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
           >
             {projects.length} Projects
           </Link>
-          <ButtonLink href="/contact">Contact</ButtonLink>
+          <ButtonLink href={shell.secondaryCTA.href} variant="secondary">
+            {shell.secondaryCTA.label}
+          </ButtonLink>
+          <ButtonLink href={shell.primaryCTA.href}>{shell.primaryCTA.label}</ButtonLink>
         </div>
       </PageShell>
     </header>
   );
 }
 
-export function SiteFooter() {
+export async function SiteFooter({
+  content,
+}: {
+  content?: SiteShellContent;
+}) {
+  const shell = content ?? (await getSiteShellContent());
+
   return (
     <footer className="border-t border-white/10 bg-slate-950/80">
       <PageShell className="grid gap-8 py-12 lg:grid-cols-[1.3fr_0.7fr_0.7fr]">
         <div className="space-y-4">
-          <p className="text-lg font-semibold text-white">{site.name}</p>
+          <p className="text-lg font-semibold text-white">{shell.site.name}</p>
           <p className="max-w-lg text-sm leading-7 text-slate-300">
-            Senior AI, data, automation, and analytics work presented with
-            clarity, structure, and a focus on practical delivery.
+            {shell.footerBlurb}
           </p>
           <p className="text-sm text-slate-400">
             Built for people who want to quickly understand the work, the value,
@@ -342,7 +358,7 @@ export function SiteFooter() {
             Navigation
           </p>
           <div className="flex flex-col gap-2">
-            {navigation.map((item) => (
+            {shell.navigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -359,7 +375,7 @@ export function SiteFooter() {
             Links
           </p>
           <div className="flex flex-col gap-2">
-            {socialLinks.map((item) => (
+            {shell.socialLinks.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -369,18 +385,18 @@ export function SiteFooter() {
               </Link>
             ))}
             <Link
-              href={`mailto:${site.email}`}
+              href={`mailto:${shell.site.email}`}
               className="text-sm text-slate-300 transition hover:text-white"
             >
-              {site.email}
+              {shell.site.email}
             </Link>
           </div>
         </div>
       </PageShell>
       <div className="border-t border-white/10">
         <PageShell className="flex flex-col gap-2 py-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>(c) {new Date().getFullYear()} {site.name}. All rights reserved.</p>
-          <p>{site.location}</p>
+          <p>(c) {new Date().getFullYear()} {shell.site.name}. All rights reserved.</p>
+          <p>{shell.site.location}</p>
         </PageShell>
       </div>
     </footer>

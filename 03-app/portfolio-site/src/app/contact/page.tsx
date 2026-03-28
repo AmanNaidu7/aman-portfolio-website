@@ -1,45 +1,24 @@
 ﻿import { Badge, ButtonLink, PageShell, SectionHeading } from "@/components/site";
-import { socialLinks, site } from "@/lib/site-data";
 
 export const metadata = {
   title: "Contact",
   description: "Simple ways to contact Aman Naidu.",
 };
 
-const contactMethods = [
-  {
-    label: "Email",
-    value: site.email,
-    href: `mailto:${site.email}`,
-    note: "Best for project inquiries, introductions, and short briefs.",
-  },
-  {
-    label: "LinkedIn",
-    value: "LinkedIn profile",
-    href: site.linkedin,
-    note: "Good for professional networking and background checks.",
-  },
-  {
-    label: "GitHub",
-    value: "GitHub profile",
-    href: site.github,
-    note: "Useful if you want to inspect code and project activity.",
-  },
-];
+import { getContactPageContent } from "@/lib/contact-shell";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const content = await getContactPageContent();
+
   return (
     <PageShell className="space-y-12 py-10 sm:py-14 lg:py-16">
       <section className="max-w-3xl space-y-6">
-        <Badge>Contact</Badge>
+        <Badge>{content.badge}</Badge>
         <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-          Reach out directly if you want to discuss a project, opportunity, or
-          collaboration.
+          {content.heroTitle}
         </h1>
         <p className="text-base leading-7 text-slate-300 sm:text-lg">
-          The page is intentionally low-friction: clear contact methods,
-          predictable expectations, and an optional message form that opens a
-          new email.
+          {content.heroSummary}
         </p>
       </section>
 
@@ -51,7 +30,7 @@ export default function ContactPage() {
             description="Choose the channel that suits the conversation best."
           />
           <div className="mt-6 space-y-4">
-            {contactMethods.map((method) => (
+            {content.contactMethods.map((method) => (
               <a
                 key={method.label}
                 href={method.href}
@@ -80,17 +59,15 @@ export default function ContactPage() {
 
         <article className="rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-6">
           <p className="text-sm uppercase tracking-[0.22em] text-slate-400">
-            Optional message form
+            {content.formTitle}
           </p>
           <p className="mt-4 text-sm leading-7 text-slate-300">
-            This version uses a simple mailto form so there is no backend
-            dependency. Submitting it opens the user&apos;s email client with the
-            details filled in.
+            {content.formIntro}
           </p>
 
           <form
             className="mt-6 grid gap-4"
-            action={`mailto:${site.email}`}
+            action={`mailto:${content.email}`}
             method="post"
             encType="text/plain"
           >
@@ -141,7 +118,7 @@ export default function ContactPage() {
               Useful links
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
-              {socialLinks.map((link) => (
+              {content.usefulLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
