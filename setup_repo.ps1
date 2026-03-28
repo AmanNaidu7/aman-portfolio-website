@@ -2,6 +2,7 @@ $ProjectPath = "C:\Python\Projects\Upwork Portfolio\Website"
 $VenvName = ".venv"
 $GitHubUser = "AmanNaidu7"
 $RepoName = "aman-portfolio-website"
+$BranchName = "main"
 
 Write-Host "Starting project setup..." -ForegroundColor Cyan
 
@@ -71,29 +72,56 @@ if (-Not (Test-Path "$ProjectPath\.git")) {
     Write-Host "Git repository already initialized. Skipping..." -ForegroundColor DarkYellow
 }
 
-# Add all files
-Write-Host "Adding files to git..." -ForegroundColor Yellow
-git add .
-
-# First commit
-Write-Host "Creating commit..." -ForegroundColor Yellow
-git commit -m "Initial project structure and planning docs"
-
-# Rename branch to main
-Write-Host "Setting branch to main..." -ForegroundColor Yellow
-git branch -M main
+# Ensure branch name
+Write-Host "Setting branch to $BranchName..." -ForegroundColor Yellow
+git branch -M $BranchName
 
 # Add remote if it does not exist
+$RemoteUrl = "https://github.com/$GitHubUser/$RepoName.git"
 $RemoteCheck = git remote
+
 if ($RemoteCheck -notcontains "origin") {
     Write-Host "Adding GitHub remote..." -ForegroundColor Yellow
-    git remote add origin "https://github.com/$GitHubUser/$RepoName.git"
+    git remote add origin $RemoteUrl
 } else {
     Write-Host "Remote origin already exists. Skipping..." -ForegroundColor DarkYellow
 }
 
+# Add all files
+Write-Host "Adding files to git..." -ForegroundColor Yellow
+git add .
+
+# Commit only if there is something to commit
+$HasChanges = git status --porcelain
+if ($HasChanges) {
+    Write-Host "Creating commit..." -ForegroundColor Yellow
+    git commit -m "Initial project structure and planning docs"
+} else {
+    Write-Host "No changes to commit. Skipping commit..." -ForegroundColor DarkYellow
+}
+
+# Check whether remote branch exists
+Write-Host "Checking remote branch state..." -ForegroundColor Yellow
+git ls-remote --exit-code --heads origin $BranchName *> $null
+$RemoteBranchExists = ($LASTEXITCODE -eq 0)
+
+if ($RemoteBranchExists) {
+    Write-Host "Remote branch exists. Pulling remote changes first..." -ForegroundColor Yellow
+    git pull origin $BranchName --allow-unrelated-histories --no-rebase
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Pull failed. Resolve conflicts, then re-run the script." -ForegroundColor Red
+        exit 1
+    }
+} else {
+    Write-Host "Remote branch does not exist yet. No pull needed." -ForegroundColor DarkYellow
+}
+
 # Push to GitHub
 Write-Host "Pushing to GitHub..." -ForegroundColor Yellow
-git push -u origin main
+git push -u origin $BranchName
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Push failed. Check GitHub auth or remote conflicts." -ForegroundColor Red
+    exit 1
+}
 
 Write-Host "Setup complete." -ForegroundColor Green
