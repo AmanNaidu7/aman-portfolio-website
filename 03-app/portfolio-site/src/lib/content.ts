@@ -3,7 +3,7 @@ import { readFile, readdir } from "node:fs/promises";
 import matter from "gray-matter";
 import { cache } from "react";
 
-const CONTENT_ROOT = path.resolve(process.cwd(), "..", "..", "02-content");
+const CONTENT_ROOT = path.resolve(process.cwd(), "content");
 const PROJECTS_DIR = path.join(CONTENT_ROOT, "projects");
 
 type RecordLike = Record<string, unknown>;
