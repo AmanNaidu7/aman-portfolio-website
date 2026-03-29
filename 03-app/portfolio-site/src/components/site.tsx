@@ -18,32 +18,11 @@ type ProjectCardProps = {
   project: (typeof projects)[number];
 };
 
-type CapabilityCardProps = {
-  capability: {
-    title: string;
-    description: string;
-  };
-};
-
-type ProcessCardProps = {
-  step: {
-    title: string;
-    description: string;
-  };
-  index: number;
-};
-
 type SectionHeadingProps = {
   eyebrow?: string;
   title: string;
   description?: string;
   action?: ReactNode;
-};
-
-type StatCardProps = {
-  label: string;
-  value: string;
-  description: string;
 };
 
 export function PageShell({
@@ -128,32 +107,6 @@ export function SectionHeading({
         ) : null}
       </div>
       {action ? <div>{action}</div> : null}
-    </div>
-  );
-}
-
-export function StatCard({ label, value, description }: StatCardProps) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-      <p className="text-xs uppercase tracking-[0.2em] text-slate-400">{label}</p>
-      <p className="mt-3 text-xl font-semibold text-white">{value}</p>
-      <p className="mt-2 text-sm leading-6 text-slate-300">{description}</p>
-    </div>
-  );
-}
-
-export function VisualFrame({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.85),rgba(15,23,42,0.55))] p-5 shadow-2xl shadow-slate-950/35 ${className}`}
-    >
-      {children}
     </div>
   );
 }
@@ -250,31 +203,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
     </article>
-  );
-}
-
-export function CapabilityCard({ capability }: CapabilityCardProps) {
-  return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/10">
-      <h3 className="text-lg font-semibold text-white">{capability.title}</h3>
-      <p className="mt-3 text-sm leading-7 text-slate-300">
-        {capability.description}
-      </p>
-    </div>
-  );
-}
-
-export function ProcessCard({ step, index }: ProcessCardProps) {
-  return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/10 text-sm font-semibold text-emerald-200">
-          {index}
-        </div>
-        <h3 className="text-lg font-semibold text-white">{step.title}</h3>
-      </div>
-      <p className="mt-4 text-sm leading-7 text-slate-300">{step.description}</p>
-    </div>
   );
 }
 

@@ -23,18 +23,6 @@ function compact(values: Array<string | undefined | null>) {
     .filter(Boolean);
 }
 
-function buildFallbackLinks(project?: Project): Project["links"] {
-  if (!project) {
-    return {};
-  }
-
-  return {
-    demo: project.links.demo,
-    repo: project.links.repo,
-    video: project.links.video,
-  };
-}
-
 function buildMarkdownProject(project: MarkdownProject): Project {
   const fallbackProject = getFallbackProjectForProjectSlug(project.slug);
 
@@ -45,19 +33,8 @@ function buildMarkdownProject(project: MarkdownProject): Project {
     category: project.category,
     featured: project.featured,
     techStack: fallbackProject?.techStack ?? project.tech,
-    heroImage:
-      fallbackProject?.heroImage ?? `/project-images/${project.slug}/hero.png`,
     problem: project.problem,
     solution: fallbackProject?.solution ?? project.whatIDid,
-    architecture:
-      fallbackProject?.architecture ??
-      normalizeText(
-        compact([
-          project.whatIDid,
-          project.whyItMatters,
-          project.outcome,
-        ]).join(" "),
-      ),
     keyFeatures:
       fallbackProject?.keyFeatures ??
       compact([
@@ -69,16 +46,11 @@ function buildMarkdownProject(project: MarkdownProject): Project {
     challenges:
       fallbackProject?.challenges ??
       compact([project.whyItMatters, project.problem]),
-    links: buildFallbackLinks(fallbackProject),
   };
 }
 
 function buildFallbackProject(project: Project): Project {
-  return {
-    ...project,
-    slug: project.slug,
-    links: buildFallbackLinks(project),
-  };
+  return project;
 }
 
 function mergeProjects(

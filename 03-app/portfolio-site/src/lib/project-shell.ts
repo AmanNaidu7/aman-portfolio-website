@@ -13,19 +13,12 @@ export type ProjectDetailContent = {
   category: string;
   featured: boolean;
   techStack: string[];
-  heroImage: string;
   problem: string;
   solution: string;
-  architecture: string;
   keyFeatures: string[];
   outcome: string;
   challenges: string[];
   whyItMatters: string;
-  links: {
-    demo?: string;
-    repo?: string;
-    video?: string;
-  };
   body: string;
 };
 
@@ -43,45 +36,6 @@ const fallbackAliases: Record<string, string> = {
   "data-quality-monitoring-pipeline": "data-quality-monitoring-pipeline",
   "forecast-ops-deployment": "forecast-ops-deployment",
 };
-
-function normalizeText(value: string) {
-  return value.replace(/\s+/g, " ").trim();
-}
-
-function extractSection(body: string, heading: string) {
-  const lines = body.split(/\r?\n/);
-  const targetHeading = heading.trim().toLowerCase();
-  const collected: string[] = [];
-  let collecting = false;
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    if (trimmed.startsWith("## ")) {
-      const currentHeading = trimmed.slice(3).trim().toLowerCase();
-      if (collecting) {
-        break;
-      }
-      collecting = currentHeading === targetHeading;
-      continue;
-    }
-
-    if (collecting) {
-      collected.push(line);
-    }
-  }
-
-  return collected.join("\n").trim();
-}
-
-function extractFirstParagraph(section: string) {
-  const paragraphs = section
-    .split(/\n\s*\n/)
-    .map((paragraph) => normalizeText(paragraph))
-    .filter(Boolean);
-
-  return paragraphs[0] ?? "";
-}
 
 function getFallbackProject(slug: string) {
   const fallbackSlug = fallbackAliases[slug] ?? slug;
@@ -114,15 +68,12 @@ function buildFallbackDetail(slug: string) {
     category: project.category,
     featured: project.featured,
     techStack: project.techStack,
-    heroImage: project.heroImage,
     problem: project.problem,
     solution: project.solution,
-    architecture: project.architecture,
     keyFeatures: project.keyFeatures,
     outcome: project.outcome,
     challenges: project.challenges,
-    whyItMatters: project.architecture,
-    links: project.links,
+    whyItMatters: project.outcome,
     body: "",
   } satisfies ProjectDetailContent;
 }
@@ -131,8 +82,6 @@ function buildMarkdownDetail(
   project: MarkdownProject,
 ): ProjectDetailContent {
   const fallbackProject = getFallbackProject(project.slug);
-  const overview = extractFirstParagraph(extractSection(project.body, "Overview"));
-  const notes = extractFirstParagraph(extractSection(project.body, "Notes"));
 
   return {
     slug: project.slug,
@@ -141,20 +90,8 @@ function buildMarkdownDetail(
     category: project.category,
     featured: project.featured,
     techStack: project.tech,
-    heroImage:
-      fallbackProject?.heroImage ??
-      `/project-images/${project.slug}/hero.png`,
     problem: project.problem,
     solution: project.whatIDid,
-    architecture: normalizeText(
-      [
-        project.whatIDid,
-        overview ? `Overview: ${overview}` : "",
-        project.whyItMatters ? `Why it matters: ${project.whyItMatters}` : "",
-      ]
-        .filter(Boolean)
-        .join(" "),
-    ),
     keyFeatures: fallbackProject?.keyFeatures ?? [
       project.whatIDid,
       project.whyItMatters,
@@ -163,10 +100,9 @@ function buildMarkdownDetail(
     outcome: project.outcome,
     challenges: fallbackProject?.challenges ?? [
       project.whyItMatters,
-      notes ? `Notes: ${notes}` : "Additional detail can be added later.",
+      "Additional implementation notes can be added later.",
     ].filter(Boolean),
     whyItMatters: project.whyItMatters,
-    links: fallbackProject?.links ?? {},
     body: project.body,
   };
 }

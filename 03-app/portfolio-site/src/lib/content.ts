@@ -49,42 +49,17 @@ export type HomeContent = {
   heroPrimaryCTA: ContentLink;
   heroSecondaryCTA: ContentLink;
   heroTertiaryCTA: ContentLink;
-  stats: Array<{
-    label: string;
-    value: string;
-    description: string;
-  }>;
-  heroOperatingStyleLabel: string;
-  heroAvailabilityLabel: string;
-  credibilityCards: Array<{
-    title: string;
-    description: string;
-  }>;
-  heroFocusLabel: string;
-  heroFocusAreas: string[];
   featuredWorkEyebrow: string;
   featuredWorkTitle: string;
   featuredWorkDescription: string;
-  capabilitiesEyebrow: string;
-  capabilitiesTitle: string;
-  capabilitiesDescription: string;
-  professionalSummaryEyebrow: string;
-  professionalSummaryTitle: string;
-  professionalSummaryBody: string;
-  professionalSummaryCTA: ContentLink;
   workingStyleEyebrow: string;
   workingStyleTitle: string;
-  workingStyleBadge: string;
   finalCtaEyebrow: string;
   finalCtaTitle: string;
   finalCtaDescription: string;
   finalCtaPrimaryCTA: ContentLink;
   finalCtaSecondaryCTA: ContentLink;
   finalCtaTertiaryCTA: ContentLink;
-  capabilities: Array<{
-    title: string;
-    description: string;
-  }>;
 };
 
 export type AboutContent = {
@@ -171,76 +146,6 @@ function requireLinkArray(value: unknown, fieldName: string): ContentLink[] {
   return value.map((item, index) => requireLink(item, `${fieldName}[${index}]`));
 }
 
-function requireCapabilityArray(
-  value: unknown,
-  fieldName: string,
-): HomeContent["capabilities"] {
-  if (!Array.isArray(value)) {
-    throw new Error(`Expected an array for ${fieldName}.`);
-  }
-
-  return value.map((item, index) => {
-    if (!isRecord(item)) {
-      throw new Error(`Expected an object for ${fieldName}[${index}].`);
-    }
-
-    return {
-      title: requireString(item.title, `${fieldName}[${index}].title`),
-      description: requireString(
-        item.description,
-        `${fieldName}[${index}].description`,
-      ),
-    };
-  });
-}
-
-function requireHomeStatArray(
-  value: unknown,
-  fieldName: string,
-): HomeContent["stats"] {
-  if (!Array.isArray(value)) {
-    throw new Error(`Expected an array for ${fieldName}.`);
-  }
-
-  return value.map((item, index) => {
-    if (!isRecord(item)) {
-      throw new Error(`Expected an object for ${fieldName}[${index}].`);
-    }
-
-    return {
-      label: requireString(item.label, `${fieldName}[${index}].label`),
-      value: requireString(item.value, `${fieldName}[${index}].value`),
-      description: requireString(
-        item.description,
-        `${fieldName}[${index}].description`,
-      ),
-    };
-  });
-}
-
-function requireCardArray(
-  value: unknown,
-  fieldName: string,
-): HomeContent["credibilityCards"] {
-  if (!Array.isArray(value)) {
-    throw new Error(`Expected an array for ${fieldName}.`);
-  }
-
-  return value.map((item, index) => {
-    if (!isRecord(item)) {
-      throw new Error(`Expected an object for ${fieldName}[${index}].`);
-    }
-
-    return {
-      title: requireString(item.title, `${fieldName}[${index}].title`),
-      description: requireString(
-        item.description,
-        `${fieldName}[${index}].description`,
-      ),
-    };
-  });
-}
-
 function optionalStringArray(value: unknown) {
   if (!Array.isArray(value)) {
     return [];
@@ -324,24 +229,6 @@ function parseHomeContent(doc: MarkdownDocument<RecordLike>): HomeContent {
       doc.frontmatter.heroTertiaryCTA,
       "heroTertiaryCTA",
     ),
-    stats: requireHomeStatArray(doc.frontmatter.stats, "stats"),
-    heroOperatingStyleLabel: requireString(
-      doc.frontmatter.heroOperatingStyleLabel,
-      "heroOperatingStyleLabel",
-    ),
-    heroAvailabilityLabel: requireString(
-      doc.frontmatter.heroAvailabilityLabel,
-      "heroAvailabilityLabel",
-    ),
-    credibilityCards: requireCardArray(
-      doc.frontmatter.credibilityCards,
-      "credibilityCards",
-    ),
-    heroFocusLabel: requireString(doc.frontmatter.heroFocusLabel, "heroFocusLabel"),
-    heroFocusAreas: requireStringArray(
-      doc.frontmatter.heroFocusAreas,
-      "heroFocusAreas",
-    ),
     featuredWorkEyebrow: requireString(
       doc.frontmatter.featuredWorkEyebrow,
       "featuredWorkEyebrow",
@@ -354,34 +241,6 @@ function parseHomeContent(doc: MarkdownDocument<RecordLike>): HomeContent {
       doc.frontmatter.featuredWorkDescription,
       "featuredWorkDescription",
     ),
-    capabilitiesEyebrow: requireString(
-      doc.frontmatter.capabilitiesEyebrow,
-      "capabilitiesEyebrow",
-    ),
-    capabilitiesTitle: requireString(
-      doc.frontmatter.capabilitiesTitle,
-      "capabilitiesTitle",
-    ),
-    capabilitiesDescription: requireString(
-      doc.frontmatter.capabilitiesDescription,
-      "capabilitiesDescription",
-    ),
-    professionalSummaryEyebrow: requireString(
-      doc.frontmatter.professionalSummaryEyebrow,
-      "professionalSummaryEyebrow",
-    ),
-    professionalSummaryTitle: requireString(
-      doc.frontmatter.professionalSummaryTitle,
-      "professionalSummaryTitle",
-    ),
-    professionalSummaryBody: requireString(
-      doc.frontmatter.professionalSummaryBody,
-      "professionalSummaryBody",
-    ),
-    professionalSummaryCTA: requireLink(
-      doc.frontmatter.professionalSummaryCTA,
-      "professionalSummaryCTA",
-    ),
     workingStyleEyebrow: requireString(
       doc.frontmatter.workingStyleEyebrow,
       "workingStyleEyebrow",
@@ -389,10 +248,6 @@ function parseHomeContent(doc: MarkdownDocument<RecordLike>): HomeContent {
     workingStyleTitle: requireString(
       doc.frontmatter.workingStyleTitle,
       "workingStyleTitle",
-    ),
-    workingStyleBadge: requireString(
-      doc.frontmatter.workingStyleBadge,
-      "workingStyleBadge",
     ),
     finalCtaEyebrow: requireString(
       doc.frontmatter.finalCtaEyebrow,
@@ -415,7 +270,6 @@ function parseHomeContent(doc: MarkdownDocument<RecordLike>): HomeContent {
       doc.frontmatter.finalCtaTertiaryCTA,
       "finalCtaTertiaryCTA",
     ),
-    capabilities: requireCapabilityArray(doc.frontmatter.capabilities, "capabilities"),
   };
 }
 
