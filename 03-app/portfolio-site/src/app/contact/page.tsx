@@ -1,4 +1,4 @@
-﻿import { Badge, ButtonLink, PageShell, SectionHeading } from "@/components/site";
+import { Badge, ButtonLink, PageShell } from "@/components/site";
 
 export const metadata = {
   title: "Contact",
@@ -22,41 +22,7 @@ export default async function ContactPage() {
         </p>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-        <article className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-          <SectionHeading
-            eyebrow="Main contact methods"
-            title="Fast ways to connect"
-            description="Choose the channel that suits the conversation best."
-          />
-          <div className="mt-6 space-y-4">
-            {content.contactMethods.map((method) => (
-              <a
-                key={method.label}
-                href={method.href}
-                className="block rounded-2xl border border-white/10 bg-slate-950/60 p-4 transition hover:border-white/20 hover:bg-slate-950"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.2em] text-slate-400">
-                      {method.label}
-                    </p>
-                    <p className="mt-2 text-lg font-medium text-white">
-                      {method.value}
-                    </p>
-                  </div>
-                  <span aria-hidden="true" className="text-slate-400">
-                    -&gt;
-                  </span>
-                </div>
-                <p className="mt-3 text-sm leading-7 text-slate-300">
-                  {method.note}
-                </p>
-              </a>
-            ))}
-          </div>
-        </article>
-
+      <section className="mx-auto grid max-w-4xl gap-5">
         <article className="rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-6">
           <p className="text-sm uppercase tracking-[0.22em] text-slate-400">
             {content.formTitle}
@@ -134,3 +100,4 @@ export default async function ContactPage() {
     </PageShell>
   );
 }
+

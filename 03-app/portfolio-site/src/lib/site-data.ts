@@ -29,11 +29,12 @@ export const site = {
   title: "Senior AI, Data, Automation & Analytics Professional",
   description:
     "A professional portfolio showcasing AI systems, data engineering, automation, and practical analytics delivery.",
-  email: "aman@example.com",
+  email: "aman@xcomsys.com",
   linkedin: "https://www.linkedin.com/in/aman-naidu/",
-  github: "https://github.com/aman-naidu",
-  resume: "/resume",
+  github: "https://github.com/AmanNaidu7",
   location: "Brisbane, Australia",
+  profileImage: "/profile/aman-naidu.jpg",
+  profileImageAlt: "Portrait of Aman Naidu",
 };
 
 export const navigation: ProjectLink[] = [
@@ -44,7 +45,6 @@ export const navigation: ProjectLink[] = [
 ];
 
 export const socialLinks: ProjectLink[] = [
-  { label: "Resume", href: site.resume },
   { label: "LinkedIn", href: site.linkedin },
   { label: "GitHub", href: site.github },
 ];

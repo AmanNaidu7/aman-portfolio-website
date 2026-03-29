@@ -62,18 +62,19 @@ function buildFallbackContactContent(): ContactPageContent {
 
 function buildMarkdownContactContent(
   content: MarkdownContactContent,
+  email: string,
 ): ContactPageContent {
   return {
     badge: "Contact",
     heroTitle:
       "Reach out directly if you want to discuss a project, opportunity, or collaboration.",
     heroSummary: content.intro,
-    email: fallbackSite.email,
+    email,
     contactMethods: [
       {
         label: content.emailLabel,
-        value: fallbackSite.email,
-        href: `mailto:${fallbackSite.email}`,
+        value: email,
+        href: `mailto:${email}`,
         note: "Best for project inquiries, introductions, and short briefs.",
       },
       {
@@ -98,7 +99,7 @@ function buildMarkdownContactContent(
 export const getContactPageContent = cache(async (): Promise<ContactPageContent> => {
   try {
     const content = await loadContactPage();
-    return buildMarkdownContactContent(content);
+    return buildMarkdownContactContent(content, fallbackSite.email);
   } catch {
     return buildFallbackContactContent();
   }

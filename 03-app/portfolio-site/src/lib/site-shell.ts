@@ -8,7 +8,8 @@ export type SiteShellContent = {
     description: string;
     email: string;
     location: string;
-    resume: string;
+    profileImage: string;
+    profileImageAlt: string;
   };
   navigation: {
     label: string;
@@ -48,21 +49,21 @@ function getFallbackShellContent(): SiteShellContent {
       description: fallbackSite.description,
       email: fallbackSite.email,
       location: fallbackSite.location,
-      resume: fallbackSite.resume,
+      profileImage: fallbackSite.profileImage,
+      profileImageAlt: fallbackSite.profileImageAlt,
     },
     navigation: fallbackNavigation,
     socialLinks: fallbackSocialLinks,
     primaryCTA: { label: "Contact Me", href: "/contact" },
     secondaryCTA: { label: "View Projects", href: "/projects" },
     footerBlurb:
-      "Senior AI, data, automation, and analytics work presented with clarity, structure, and a focus on practical delivery.",
+      "Senior AI, data, and automation work focused on solving real business problems, with clarity, structure, and practical delivery. Designed for people who want to quickly understand the problem, the solution, and the value.",
   };
 }
 
 export const getSiteShellContent = async (): Promise<SiteShellContent> => {
   try {
     const content = await loadContent();
-    const resumeLink = findLink(content.socials.links, "Resume", fallbackSite.resume);
     const linkedinLink = findLink(
       content.socials.links,
       "LinkedIn",
@@ -77,13 +78,14 @@ export const getSiteShellContent = async (): Promise<SiteShellContent> => {
         description: content.site.siteDescription,
         email: content.site.email,
         location: content.site.location,
-        resume: resumeLink.href,
+        profileImage: content.site.profileImage,
+        profileImageAlt: content.site.profileImageAlt,
       },
       navigation: content.navigation.links.length > 0 ? content.navigation.links : fallbackNavigation,
       socialLinks:
         content.socials.links.length > 0
           ? content.socials.links
-          : [resumeLink, linkedinLink, githubLink],
+          : [linkedinLink, githubLink],
       primaryCTA: content.site.primaryCTA,
       secondaryCTA: content.site.secondaryCTA,
       footerBlurb: content.site.footerBlurb,

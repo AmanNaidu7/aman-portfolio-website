@@ -1,12 +1,6 @@
 import { loadHomePage } from "@/lib/content";
-import {
-  capabilities as fallbackCapabilities,
-  credibilityPoints as fallbackCredibilityPoints,
-  homeStats as fallbackHomeStats,
-  processSteps as fallbackProcessSteps,
-  projects,
-  site as fallbackSite,
-} from "@/lib/site-data";
+import { getProjectListContent } from "@/lib/project-list-shell";
+import { projects as fallbackProjects, site as fallbackSite } from "@/lib/site-data";
 
 export type HomeShellContent = {
   eyebrow: string;
@@ -24,40 +18,55 @@ export type HomeShellContent = {
     label: string;
     href: string;
   };
-  credibilityStrip: string[];
-  capabilities: {
+  featuredWork: {
+    eyebrow: string;
     title: string;
     description: string;
-  }[];
-  operatingStyle: string;
-  professionalSummary: string;
-  workingStyleTitle: string;
-  workingStyleSteps: {
+  };
+  howIWork: {
+    eyebrow: string;
     title: string;
     description: string;
-  }[];
-  siteName: string;
+    bullets: string[];
+  };
+  finalCta: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    primaryCTA: {
+      label: string;
+      href: string;
+    };
+    secondaryCTA: {
+      label: string;
+      href: string;
+    };
+    tertiaryCTA: {
+      label: string;
+      href: string;
+    };
+  };
+  featuredProjects: Awaited<ReturnType<typeof getProjectListContent>>["projects"];
 };
 
-function normalizeParagraph(text: string) {
+function normalizeText(text: string) {
   return text.replace(/\s+/g, " ").trim();
 }
 
 function extractSection(body: string, heading: string) {
   const lines = body.split(/\r?\n/);
-  const targetHeading = heading.trim().toLowerCase();
+  const target = heading.trim().toLowerCase();
   const collected: string[] = [];
   let collecting = false;
 
   for (const line of lines) {
     const trimmed = line.trim();
-
     if (trimmed.startsWith("## ")) {
-      const currentHeading = trimmed.slice(3).trim().toLowerCase();
+      const current = trimmed.slice(3).trim().toLowerCase();
       if (collecting) {
         break;
       }
-      collecting = currentHeading === targetHeading;
+      collecting = current === target;
       continue;
     }
 
@@ -69,86 +78,87 @@ function extractSection(body: string, heading: string) {
   return collected.join("\n").trim();
 }
 
-function extractFirstParagraph(section: string) {
-  const paragraphs = section
+function extractParagraph(section: string) {
+  const paragraph = section
     .split(/\n\s*\n/)
-    .map((paragraph) => normalizeParagraph(paragraph))
-    .filter(Boolean);
+    .map((part) => normalizeText(part))
+    .find(Boolean);
 
-  return paragraphs[0] ?? "";
+  return paragraph ?? "";
 }
 
-function extractNumberedSteps(section: string) {
-  const lines = section.split(/\r?\n/);
-  const steps: { title: string; description: string }[] = [];
-  let currentStep: { title: string; description: string } | null = null;
+function extractBullets(section: string) {
+  const bullets: string[] = [];
 
-  for (const line of lines) {
+  for (const line of section.split(/\r?\n/)) {
     const trimmed = line.trim();
+    if (!trimmed) continue;
 
-    if (!trimmed) {
-      continue;
-    }
-
-    const numberedMatch = trimmed.match(/^(\d+)\.\s*(.*)$/);
-    if (numberedMatch) {
-      if (currentStep) {
-        steps.push(currentStep);
-      }
-
-      currentStep = {
-        title: numberedMatch[2].trim(),
-        description: "",
-      };
-      continue;
-    }
-
-    if (currentStep && line.startsWith("   ")) {
-      currentStep.description = currentStep.description
-        ? `${currentStep.description} ${trimmed}`
-        : trimmed;
+    const match = trimmed.match(/^[-*]\s+(.*)$/) ?? trimmed.match(/^\d+\.\s+(.*)$/);
+    if (match) {
+      const bullet = normalizeText(match[1]);
+      if (bullet) bullets.push(bullet);
     }
   }
 
-  if (currentStep) {
-    steps.push(currentStep);
-  }
-
-  return steps.filter((step) => step.title.length > 0);
+  return bullets;
 }
 
 function fallbackHomeContent(): HomeShellContent {
+  const featuredProjects = fallbackProjects.filter((project) => project.featured);
+
   return {
-    eyebrow: "Senior portfolio for AI, data, and automation work",
+    eyebrow: "Senior AI, Data & Automation Systems",
     heroTitle:
-      "I build practical systems that turn complex data and AI into reliable business tools.",
-    heroSummary: `${fallbackSite.name} is a senior AI, data, automation, and analytics professional focused on clear architecture, production-minded delivery, and credible outcomes for business teams.`,
+      "I design and deliver production-ready AI and data systems that solve real business problems.",
+    heroSummary:
+      `${fallbackSite.name} is a senior AI, data, automation, and analytics professional focused on clear architecture, production-minded delivery, and credible outcomes for business teams.`,
     heroPrimaryCTA: { label: "View Projects", href: "/projects" },
     heroSecondaryCTA: { label: "Contact Me", href: "/contact" },
     heroTertiaryCTA: { label: "About", href: "/about" },
-    credibilityStrip: ["15+ years", "Enterprise AI", "Production systems", "Mining, energy, and government"],
-    capabilities: fallbackCapabilities,
-    operatingStyle: "Structured, calm, and commercially useful.",
-    professionalSummary:
-      "I focus on systems that can be understood, maintained, and trusted in real operating environments. My work sits at the intersection of technical depth, delivery discipline, and practical business value.",
-    workingStyleTitle: "How I approach projects",
-    workingStyleSteps: fallbackProcessSteps,
-    siteName: fallbackSite.name,
+    featuredWork: {
+      eyebrow: "Featured work",
+      title: "Selected projects with practical depth.",
+      description:
+        "The featured set is tuned for quick credibility: business problem, implementation choices, and a practical outcome.",
+    },
+    howIWork: {
+      eyebrow: "Working style",
+      title: "How I Work",
+      description:
+        "I design systems that are structured, practical, and built for real operating environments.",
+      bullets: [
+        "Understand the real problem",
+        "Design for practical use",
+        "Build with clarity",
+        "Deliver for production",
+      ],
+    },
+    finalCta: {
+      eyebrow: "Final call to action",
+      title:
+        "If you want to review the work, compare notes, or start a conversation, the next step is straightforward.",
+      description:
+        "Browse the projects, read the background, or reach out directly through the contact page. The content is intentionally simple so a visitor can move quickly from interest to action.",
+      primaryCTA: { label: "Contact Me", href: "/contact" },
+      secondaryCTA: { label: "View Projects", href: "/projects" },
+      tertiaryCTA: { label: "About", href: "/about" },
+    },
+    featuredProjects,
   };
 }
 
 export const getHomeShellContent = async (): Promise<HomeShellContent> => {
   try {
-    const content = await loadHomePage();
-    const operatingStyle = normalizeParagraph(
-      extractFirstParagraph(extractSection(content.body, "Operating Style")),
-    );
-    const professionalSummary = normalizeParagraph(
-      extractFirstParagraph(extractSection(content.body, "Professional Summary")),
-    );
-    const workingStyleSteps = extractNumberedSteps(
-      extractSection(content.body, "Working Style"),
-    );
+    const [content, projectList] = await Promise.all([
+      loadHomePage(),
+      getProjectListContent(),
+    ]);
+
+    const howIWorkSection = extractSection(content.body, "How I Work");
+    const bullets = extractBullets(howIWorkSection);
+    const summary = extractParagraph(howIWorkSection);
+    const fallback = fallbackHomeContent();
 
     return {
       eyebrow: content.eyebrow,
@@ -157,37 +167,34 @@ export const getHomeShellContent = async (): Promise<HomeShellContent> => {
       heroPrimaryCTA: content.heroPrimaryCTA,
       heroSecondaryCTA: content.heroSecondaryCTA,
       heroTertiaryCTA: content.heroTertiaryCTA,
-      credibilityStrip:
-        content.credibilityStrip.length > 0
-          ? content.credibilityStrip
-          : fallbackHomeContent().credibilityStrip,
-      capabilities:
-        content.capabilities.length > 0
-          ? content.capabilities
-          : fallbackCapabilities,
-      operatingStyle: operatingStyle || fallbackHomeContent().operatingStyle,
-      professionalSummary:
-        professionalSummary || fallbackHomeContent().professionalSummary,
-      workingStyleTitle: "How I approach projects",
-      workingStyleSteps:
-        workingStyleSteps.length > 0
-          ? workingStyleSteps
-          : fallbackHomeContent().workingStyleSteps,
-      siteName: fallbackSite.name,
+      featuredWork: {
+        eyebrow: content.featuredWorkEyebrow || fallback.featuredWork.eyebrow,
+        title: content.featuredWorkTitle || fallback.featuredWork.title,
+        description:
+          content.featuredWorkDescription || fallback.featuredWork.description,
+      },
+      howIWork: {
+        eyebrow: content.workingStyleEyebrow || fallback.howIWork.eyebrow,
+        title: content.workingStyleTitle || fallback.howIWork.title,
+        description: summary || fallback.howIWork.description,
+        bullets: bullets.length > 0 ? bullets : fallback.howIWork.bullets,
+      },
+      finalCta: {
+        eyebrow: content.finalCtaEyebrow || fallback.finalCta.eyebrow,
+        title: content.finalCtaTitle || fallback.finalCta.title,
+        description:
+          content.finalCtaDescription || fallback.finalCta.description,
+        primaryCTA: content.finalCtaPrimaryCTA ?? fallback.finalCta.primaryCTA,
+        secondaryCTA:
+          content.finalCtaSecondaryCTA ?? fallback.finalCta.secondaryCTA,
+        tertiaryCTA: content.finalCtaTertiaryCTA ?? fallback.finalCta.tertiaryCTA,
+      },
+      featuredProjects:
+        projectList.projects.length > 0
+          ? projectList.projects.filter((project) => project.featured)
+          : fallback.featuredProjects,
     };
   } catch {
     return fallbackHomeContent();
   }
 };
-
-export function getFeaturedProjects() {
-  return projects.filter((project) => project.featured);
-}
-
-export function getHomeStats() {
-  return fallbackHomeStats;
-}
-
-export function getCredibilityPoints() {
-  return fallbackCredibilityPoints;
-}

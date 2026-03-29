@@ -8,6 +8,4 @@ links:
     href: "/about"
   - label: "Contact"
     href: "/contact"
-  - label: "Resume"
-    href: "/resume"
 ---

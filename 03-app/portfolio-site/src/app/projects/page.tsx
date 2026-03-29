@@ -1,4 +1,4 @@
-import { Badge, PageShell, ProjectCard, SectionHeading } from "@/components/site";
+import { Badge, PageShell, ProjectCard } from "@/components/site";
 import { getProjectListContent } from "@/lib/project-list-shell";
 
 export const metadata = {
@@ -25,42 +25,22 @@ export default async function ProjectsPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
-            <a
+            <span
               key={category}
-              href={`#${category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
+              className="rounded-full bg-white/5 px-4 py-2 text-sm text-slate-200"
             >
               {category}
-            </a>
+            </span>
           ))}
         </div>
       </section>
 
-      <section className="space-y-10">
-        {categories.map((category) => {
-          const categoryProjects = projects.filter(
-            (project) => project.category === category,
-          );
-
-          return (
-            <div
-              key={category}
-              id={category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}
-              className="space-y-5 scroll-mt-28"
-            >
-              <SectionHeading
-                eyebrow={category}
-                title={`${categoryProjects.length} project${categoryProjects.length === 1 ? "" : "s"} in this area`}
-                description="Each card is written to support fast evaluation of scope, quality, and relevance."
-              />
-              <div className="grid gap-5 xl:grid-cols-3">
-                {categoryProjects.map((project) => (
-                  <ProjectCard key={project.slug} project={project} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+      <section>
+        <div className="grid gap-5 xl:grid-cols-3">
+          {projects.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
+        </div>
       </section>
     </PageShell>
   );

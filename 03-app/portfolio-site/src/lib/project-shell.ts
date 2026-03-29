@@ -20,6 +20,7 @@ export type ProjectDetailContent = {
   keyFeatures: string[];
   outcome: string;
   challenges: string[];
+  whyItMatters: string;
   links: {
     demo?: string;
     repo?: string;
@@ -120,6 +121,7 @@ function buildFallbackDetail(slug: string) {
     keyFeatures: project.keyFeatures,
     outcome: project.outcome,
     challenges: project.challenges,
+    whyItMatters: project.architecture,
     links: project.links,
     body: "",
   } satisfies ProjectDetailContent;
@@ -163,6 +165,7 @@ function buildMarkdownDetail(
       project.whyItMatters,
       notes ? `Notes: ${notes}` : "Additional detail can be added later.",
     ].filter(Boolean),
+    whyItMatters: project.whyItMatters,
     links: fallbackProject?.links ?? {},
     body: project.body,
   };

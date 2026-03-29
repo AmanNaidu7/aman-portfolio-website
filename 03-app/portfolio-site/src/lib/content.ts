@@ -27,6 +27,8 @@ export type SiteConfigContent = {
   brandName: string;
   email: string;
   location: string;
+  profileImage: string;
+  profileImageAlt: string;
   primaryCTA: ContentLink;
   secondaryCTA: ContentLink;
   footerBlurb: string;
@@ -47,7 +49,38 @@ export type HomeContent = {
   heroPrimaryCTA: ContentLink;
   heroSecondaryCTA: ContentLink;
   heroTertiaryCTA: ContentLink;
-  credibilityStrip: string[];
+  stats: Array<{
+    label: string;
+    value: string;
+    description: string;
+  }>;
+  heroOperatingStyleLabel: string;
+  heroAvailabilityLabel: string;
+  credibilityCards: Array<{
+    title: string;
+    description: string;
+  }>;
+  heroFocusLabel: string;
+  heroFocusAreas: string[];
+  featuredWorkEyebrow: string;
+  featuredWorkTitle: string;
+  featuredWorkDescription: string;
+  capabilitiesEyebrow: string;
+  capabilitiesTitle: string;
+  capabilitiesDescription: string;
+  professionalSummaryEyebrow: string;
+  professionalSummaryTitle: string;
+  professionalSummaryBody: string;
+  professionalSummaryCTA: ContentLink;
+  workingStyleEyebrow: string;
+  workingStyleTitle: string;
+  workingStyleBadge: string;
+  finalCtaEyebrow: string;
+  finalCtaTitle: string;
+  finalCtaDescription: string;
+  finalCtaPrimaryCTA: ContentLink;
+  finalCtaSecondaryCTA: ContentLink;
+  finalCtaTertiaryCTA: ContentLink;
   capabilities: Array<{
     title: string;
     description: string;
@@ -161,6 +194,53 @@ function requireCapabilityArray(
   });
 }
 
+function requireHomeStatArray(
+  value: unknown,
+  fieldName: string,
+): HomeContent["stats"] {
+  if (!Array.isArray(value)) {
+    throw new Error(`Expected an array for ${fieldName}.`);
+  }
+
+  return value.map((item, index) => {
+    if (!isRecord(item)) {
+      throw new Error(`Expected an object for ${fieldName}[${index}].`);
+    }
+
+    return {
+      label: requireString(item.label, `${fieldName}[${index}].label`),
+      value: requireString(item.value, `${fieldName}[${index}].value`),
+      description: requireString(
+        item.description,
+        `${fieldName}[${index}].description`,
+      ),
+    };
+  });
+}
+
+function requireCardArray(
+  value: unknown,
+  fieldName: string,
+): HomeContent["credibilityCards"] {
+  if (!Array.isArray(value)) {
+    throw new Error(`Expected an array for ${fieldName}.`);
+  }
+
+  return value.map((item, index) => {
+    if (!isRecord(item)) {
+      throw new Error(`Expected an object for ${fieldName}[${index}].`);
+    }
+
+    return {
+      title: requireString(item.title, `${fieldName}[${index}].title`),
+      description: requireString(
+        item.description,
+        `${fieldName}[${index}].description`,
+      ),
+    };
+  });
+}
+
 function optionalStringArray(value: unknown) {
   if (!Array.isArray(value)) {
     return [];
@@ -207,6 +287,11 @@ function parseSiteConfig(doc: MarkdownDocument<RecordLike>): SiteConfigContent {
     brandName: requireString(doc.frontmatter.brandName, "brandName"),
     email: requireString(doc.frontmatter.email, "email"),
     location: requireString(doc.frontmatter.location, "location"),
+    profileImage: requireString(doc.frontmatter.profileImage, "profileImage"),
+    profileImageAlt: requireString(
+      doc.frontmatter.profileImageAlt,
+      "profileImageAlt",
+    ),
     primaryCTA: requireLink(doc.frontmatter.primaryCTA, "primaryCTA"),
     secondaryCTA: requireLink(doc.frontmatter.secondaryCTA, "secondaryCTA"),
     footerBlurb: requireString(doc.frontmatter.footerBlurb, "footerBlurb"),
@@ -239,9 +324,96 @@ function parseHomeContent(doc: MarkdownDocument<RecordLike>): HomeContent {
       doc.frontmatter.heroTertiaryCTA,
       "heroTertiaryCTA",
     ),
-    credibilityStrip: requireStringArray(
-      doc.frontmatter.credibilityStrip,
-      "credibilityStrip",
+    stats: requireHomeStatArray(doc.frontmatter.stats, "stats"),
+    heroOperatingStyleLabel: requireString(
+      doc.frontmatter.heroOperatingStyleLabel,
+      "heroOperatingStyleLabel",
+    ),
+    heroAvailabilityLabel: requireString(
+      doc.frontmatter.heroAvailabilityLabel,
+      "heroAvailabilityLabel",
+    ),
+    credibilityCards: requireCardArray(
+      doc.frontmatter.credibilityCards,
+      "credibilityCards",
+    ),
+    heroFocusLabel: requireString(doc.frontmatter.heroFocusLabel, "heroFocusLabel"),
+    heroFocusAreas: requireStringArray(
+      doc.frontmatter.heroFocusAreas,
+      "heroFocusAreas",
+    ),
+    featuredWorkEyebrow: requireString(
+      doc.frontmatter.featuredWorkEyebrow,
+      "featuredWorkEyebrow",
+    ),
+    featuredWorkTitle: requireString(
+      doc.frontmatter.featuredWorkTitle,
+      "featuredWorkTitle",
+    ),
+    featuredWorkDescription: requireString(
+      doc.frontmatter.featuredWorkDescription,
+      "featuredWorkDescription",
+    ),
+    capabilitiesEyebrow: requireString(
+      doc.frontmatter.capabilitiesEyebrow,
+      "capabilitiesEyebrow",
+    ),
+    capabilitiesTitle: requireString(
+      doc.frontmatter.capabilitiesTitle,
+      "capabilitiesTitle",
+    ),
+    capabilitiesDescription: requireString(
+      doc.frontmatter.capabilitiesDescription,
+      "capabilitiesDescription",
+    ),
+    professionalSummaryEyebrow: requireString(
+      doc.frontmatter.professionalSummaryEyebrow,
+      "professionalSummaryEyebrow",
+    ),
+    professionalSummaryTitle: requireString(
+      doc.frontmatter.professionalSummaryTitle,
+      "professionalSummaryTitle",
+    ),
+    professionalSummaryBody: requireString(
+      doc.frontmatter.professionalSummaryBody,
+      "professionalSummaryBody",
+    ),
+    professionalSummaryCTA: requireLink(
+      doc.frontmatter.professionalSummaryCTA,
+      "professionalSummaryCTA",
+    ),
+    workingStyleEyebrow: requireString(
+      doc.frontmatter.workingStyleEyebrow,
+      "workingStyleEyebrow",
+    ),
+    workingStyleTitle: requireString(
+      doc.frontmatter.workingStyleTitle,
+      "workingStyleTitle",
+    ),
+    workingStyleBadge: requireString(
+      doc.frontmatter.workingStyleBadge,
+      "workingStyleBadge",
+    ),
+    finalCtaEyebrow: requireString(
+      doc.frontmatter.finalCtaEyebrow,
+      "finalCtaEyebrow",
+    ),
+    finalCtaTitle: requireString(doc.frontmatter.finalCtaTitle, "finalCtaTitle"),
+    finalCtaDescription: requireString(
+      doc.frontmatter.finalCtaDescription,
+      "finalCtaDescription",
+    ),
+    finalCtaPrimaryCTA: requireLink(
+      doc.frontmatter.finalCtaPrimaryCTA,
+      "finalCtaPrimaryCTA",
+    ),
+    finalCtaSecondaryCTA: requireLink(
+      doc.frontmatter.finalCtaSecondaryCTA,
+      "finalCtaSecondaryCTA",
+    ),
+    finalCtaTertiaryCTA: requireLink(
+      doc.frontmatter.finalCtaTertiaryCTA,
+      "finalCtaTertiaryCTA",
     ),
     capabilities: requireCapabilityArray(doc.frontmatter.capabilities, "capabilities"),
   };

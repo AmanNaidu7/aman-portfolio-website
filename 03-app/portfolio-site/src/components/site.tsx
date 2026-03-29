@@ -245,10 +245,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           ))}
         </div>
 
-        <div className="flex items-center justify-between gap-3 pt-1">
-          <p className="text-sm text-slate-400">
-            {project.keyFeatures.length} key capabilities
-          </p>
+        <div className="flex items-center justify-end gap-3 pt-1">
           <TextLink href={`/projects/${project.slug}`}>Read case study</TextLink>
         </div>
       </div>
@@ -316,12 +313,6 @@ export async function SiteHeader({
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <Link
-            href={shell.secondaryCTA.href}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
-          >
-            {projects.length} Projects
-          </Link>
           <ButtonLink href={shell.secondaryCTA.href} variant="secondary">
             {shell.secondaryCTA.label}
           </ButtonLink>
@@ -346,10 +337,6 @@ export async function SiteFooter({
           <p className="text-lg font-semibold text-white">{shell.site.name}</p>
           <p className="max-w-lg text-sm leading-7 text-slate-300">
             {shell.footerBlurb}
-          </p>
-          <p className="text-sm text-slate-400">
-            Built for people who want to quickly understand the work, the value,
-            and how to get in touch.
           </p>
         </div>
 
